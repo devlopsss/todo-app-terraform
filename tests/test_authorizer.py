@@ -2,11 +2,15 @@ import json
 import sys
 import os
 import base64
+import importlib.util
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__),
-    '../modules/lambda/functions/todo_authorizer'))
-
-from lambda_function import lambda_handler, generate_policy
+spec = importlib.util.spec_from_file_location(
+    "todo_authorizer",
+    os.path.join(os.path.dirname(__file__),
+    '../modules/lambda/functions/todo_authorizer/lambda_function.py')
+)
+todo_authorizer = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(todo_authorizer)
 
 def make_token(sub):
     payload = base64.b64encode(
@@ -20,31 +24,26 @@ def test_authorizer_valid_token():
         'authorizationToken': f'Bearer {token}',
         'methodArn': 'arn:aws:execute-api:us-east-1:123:abc/prod/GET/read'
     }
-    response = lambda_handler(event, None)
+    response = todo_authorizer.lambda_handler(event, None)
     assert response['policyDocument']['Statement'][0]['Effect'] == 'Allow'
     assert response['context']['sub'] == 'test-user-123'
-    print("✅ test_authorizer_valid_token passed")
 
 def test_authorizer_invalid_token():
     event = {
         'authorizationToken': 'Bearer invalid.token',
         'methodArn': 'arn:aws:execute-api:us-east-1:123:abc/prod/GET/read'
     }
-    response = lambda_handler(event, None)
+    response = todo_authorizer.lambda_handler(event, None)
     assert response['policyDocument']['Statement'][0]['Effect'] == 'Deny'
-    print("✅ test_authorizer_invalid_token passed")
 
-def test_authorizer_missing_bearer():
+def test_authorizer_missing_sub():
+    payload = base64.b64encode(
+        json.dumps({'email': 'test@test.com'}).encode()
+    ).decode().rstrip('=')
+    token = f"eyJ.{payload}.signature"
     event = {
-        'authorizationToken': 'notabearer',
+        'authorizationToken': f'Bearer {token}',
         'methodArn': 'arn:aws:execute-api:us-east-1:123:abc/prod/GET/read'
     }
-    response = lambda_handler(event, None)
+    response = todo_authorizer.lambda_handler(event, None)
     assert response['policyDocument']['Statement'][0]['Effect'] == 'Deny'
-    print("✅ test_authorizer_missing_bearer passed")
-
-if __name__ == '__main__':
-    test_authorizer_valid_token()
-    test_authorizer_invalid_token()
-    test_authorizer_missing_bearer()
-    print("All tests passed!")
