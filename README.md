@@ -224,3 +224,27 @@ See [IMPROVEMENTS.md](./IMPROVEMENTS.md) for planned enhancements including:
 ## Author
 
 Built as part of AWS Solutions Architect Associate (SAA-C03) learning path.
+
+---
+
+## CI/CD Pipeline
+
+This project uses GitHub Actions for automated deployment.
+
+| Trigger | Jobs |
+|---|---|
+| Push to `main` | Validate → Deploy |
+| Pull Request | Validate → Plan |
+
+### Remote State
+Terraform state is stored in S3:
+- Bucket: `todo-app-terraform-state-642494479460`
+- Versioning: enabled
+- Encryption: AES256
+
+### Required GitHub Secrets
+| Secret | Description |
+|---|---|
+| `AWS_ACCESS_KEY_ID` | CI user access key |
+| `AWS_SECRET_ACCESS_KEY` | CI user secret key |
+| `AWS_ACCOUNT_ID` | AWS account ID |

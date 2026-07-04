@@ -29,6 +29,9 @@ resource "aws_lambda_function" "functions" {
   timeout          = each.value.timeout
   memory_size      = each.value.memory
 
+  # Enable versioning — required for aliases
+  publish = true
+
   dynamic "environment" {
     for_each = each.value.has_env ? [1] : []
     content {
@@ -38,12 +41,24 @@ resource "aws_lambda_function" "functions" {
     }
   }
 
-  # CloudWatch log group per function
   depends_on = [aws_cloudwatch_log_group.lambda_logs]
 
   tags = {
     Name    = "${var.app_name}-${each.key}"
     Project = var.app_name
+  }
+}
+
+# Lambda alias — points to latest version
+# API Gateway uses this alias, not the function directly
+resource "aws_lambda_alias" "prod" {
+  for_each         = local.functions
+  name             = "prod"
+  function_name    = aws_lambda_function.functions[each.key].function_name
+  function_version = aws_lambda_function.functions[each.key].version
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
