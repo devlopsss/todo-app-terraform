@@ -3,8 +3,16 @@ import boto3
 import uuid
 from datetime import datetime
 
-dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('todo-app-table')
+# Lazy initialization — not created at import time
+dynamodb = None
+table = None
+
+def get_table():
+    global dynamodb, table
+    if table is None:
+        dynamodb = boto3.resource('dynamodb')
+        table = dynamodb.Table('todo-app-table')
+    return table
 
 CORS_HEADERS = {
     'Content-Type': 'application/json',
@@ -26,7 +34,7 @@ def lambda_handler(event, context):
             'createdAt': datetime.utcnow().isoformat()
         }
 
-        table.put_item(Item=item)
+        get_table().put_item(Item=item)
 
         return {
             'statusCode': 201,

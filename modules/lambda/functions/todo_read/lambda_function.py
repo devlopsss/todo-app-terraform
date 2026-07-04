@@ -2,8 +2,15 @@ import json
 import boto3
 from boto3.dynamodb.conditions import Key
 
-dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('todo-app-table')
+dynamodb = None
+table = None
+
+def get_table():
+    global dynamodb, table
+    if table is None:
+        dynamodb = boto3.resource('dynamodb')
+        table = dynamodb.Table('todo-app-table')
+    return table
 
 CORS_HEADERS = {
     'Content-Type': 'application/json',
@@ -16,7 +23,7 @@ def lambda_handler(event, context):
     try:
         user_id = event['requestContext']['authorizer']['sub']
 
-        response = table.query(
+        response = get_table().query(
             KeyConditionExpression=Key('userId').eq(user_id)
         )
 

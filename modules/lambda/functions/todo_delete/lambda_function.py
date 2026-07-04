@@ -1,8 +1,15 @@
 import json
 import boto3
 
-dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('todo-app-table')
+dynamodb = None
+table = None
+
+def get_table():
+    global dynamodb, table
+    if table is None:
+        dynamodb = boto3.resource('dynamodb')
+        table = dynamodb.Table('todo-app-table')
+    return table
 
 CORS_HEADERS = {
     'Content-Type': 'application/json',
@@ -16,7 +23,7 @@ def lambda_handler(event, context):
         user_id = event['requestContext']['authorizer']['sub']
         todo_id = event['pathParameters']['todoId']
 
-        table.delete_item(
+        get_table().delete_item(
             Key={'userId': user_id, 'todoId': todo_id}
         )
 

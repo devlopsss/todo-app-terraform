@@ -1,33 +1,29 @@
 import json
 import sys
 import os
+import unittest.mock as mock
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__),
     '../modules/lambda/functions/todo_read'))
 
-from lambda_function import lambda_handler
-
 def test_read_todos_success():
-    event = {
-        'requestContext': {
-            'authorizer': {
-                'sub': 'test-user-123'
+    mock_table = mock.MagicMock()
+    mock_table.query.return_value = {
+        'Items': [
+            {
+                'userId': 'test-user-123',
+                'todoId': 'abc-123',
+                'title': 'Test todo',
+                'status': 'pending',
+                'createdAt': '2026-06-29T00:00:00'
             }
-        }
+        ]
     }
 
-    import unittest.mock as mock
-    with mock.patch('lambda_function.table') as mock_table:
-        mock_table.query.return_value = {
-            'Items': [
-                {
-                    'userId': 'test-user-123',
-                    'todoId': 'abc-123',
-                    'title': 'Test todo',
-                    'status': 'pending',
-                    'createdAt': '2026-06-29T00:00:00'
-                }
-            ]
+    with mock.patch('lambda_function.get_table', return_value=mock_table):
+        from lambda_function import lambda_handler
+        event = {
+            'requestContext': {'authorizer': {'sub': 'test-user-123'}}
         }
         response = lambda_handler(event, None)
 
@@ -38,17 +34,14 @@ def test_read_todos_success():
         print("✅ test_read_todos_success passed")
 
 def test_read_todos_empty():
-    event = {
-        'requestContext': {
-            'authorizer': {
-                'sub': 'test-user-123'
-            }
-        }
-    }
+    mock_table = mock.MagicMock()
+    mock_table.query.return_value = {'Items': []}
 
-    import unittest.mock as mock
-    with mock.patch('lambda_function.table') as mock_table:
-        mock_table.query.return_value = {'Items': []}
+    with mock.patch('lambda_function.get_table', return_value=mock_table):
+        from lambda_function import lambda_handler
+        event = {
+            'requestContext': {'authorizer': {'sub': 'test-user-123'}}
+        }
         response = lambda_handler(event, None)
 
         assert response['statusCode'] == 200
