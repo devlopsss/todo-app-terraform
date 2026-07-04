@@ -77,15 +77,15 @@ resource "aws_api_gateway_resource" "delete_id" {
 
 locals {
   public_routes = {
-    signup  = { resource_id = aws_api_gateway_resource.signup.id,  http_method = "POST", lambda = "todo_signup"  }
+    signup  = { resource_id = aws_api_gateway_resource.signup.id, http_method = "POST", lambda = "todo_signup" }
     confirm = { resource_id = aws_api_gateway_resource.confirm.id, http_method = "POST", lambda = "todo_confirm" }
-    login   = { resource_id = aws_api_gateway_resource.login.id,   http_method = "POST", lambda = "todo_login"   }
+    login   = { resource_id = aws_api_gateway_resource.login.id, http_method = "POST", lambda = "todo_login" }
   }
 
   protected_routes = {
-    create    = { resource_id = aws_api_gateway_resource.create.id,    http_method = "POST",   lambda = "todo_create" }
-    read      = { resource_id = aws_api_gateway_resource.read.id,      http_method = "GET",    lambda = "todo_read"   }
-    update_id = { resource_id = aws_api_gateway_resource.update_id.id, http_method = "PUT",    lambda = "todo_update" }
+    create    = { resource_id = aws_api_gateway_resource.create.id, http_method = "POST", lambda = "todo_create" }
+    read      = { resource_id = aws_api_gateway_resource.read.id, http_method = "GET", lambda = "todo_read" }
+    update_id = { resource_id = aws_api_gateway_resource.update_id.id, http_method = "PUT", lambda = "todo_update" }
     delete_id = { resource_id = aws_api_gateway_resource.delete_id.id, http_method = "DELETE", lambda = "todo_delete" }
   }
 }
@@ -106,7 +106,7 @@ resource "aws_api_gateway_integration" "public" {
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${var.lambda_arns[each.value.lambda]}/invocations"
-  
+
 }
 
 resource "aws_api_gateway_method" "protected" {

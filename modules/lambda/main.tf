@@ -4,10 +4,10 @@ locals {
     todo_read       = { handler = "lambda_function.lambda_handler", has_env = false, timeout = 10, memory = 128 }
     todo_update     = { handler = "lambda_function.lambda_handler", has_env = false, timeout = 10, memory = 128 }
     todo_delete     = { handler = "lambda_function.lambda_handler", has_env = false, timeout = 10, memory = 128 }
-    todo_authorizer = { handler = "lambda_function.lambda_handler", has_env = false, timeout = 5,  memory = 128 }
-    todo_signup     = { handler = "lambda_function.lambda_handler", has_env = true,  timeout = 15, memory = 256 }
-    todo_confirm    = { handler = "lambda_function.lambda_handler", has_env = true,  timeout = 15, memory = 256 }
-    todo_login      = { handler = "lambda_function.lambda_handler", has_env = true,  timeout = 15, memory = 256 }
+    todo_authorizer = { handler = "lambda_function.lambda_handler", has_env = false, timeout = 5, memory = 128 }
+    todo_signup     = { handler = "lambda_function.lambda_handler", has_env = true, timeout = 15, memory = 256 }
+    todo_confirm    = { handler = "lambda_function.lambda_handler", has_env = true, timeout = 15, memory = 256 }
+    todo_login      = { handler = "lambda_function.lambda_handler", has_env = true, timeout = 15, memory = 256 }
   }
 }
 
