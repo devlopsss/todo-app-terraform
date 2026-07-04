@@ -102,7 +102,7 @@ resource "aws_api_gateway_integration" "public" {
   for_each                = local.public_routes
   rest_api_id             = aws_api_gateway_rest_api.todo_api.id
   resource_id             = each.value.resource_id
-  http_method             = each.value.http_method
+  http_method             = aws_api_gateway_method.protected[each.key].http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${var.lambda_arns[each.value.lambda]}/invocations"
@@ -123,7 +123,7 @@ resource "aws_api_gateway_integration" "protected" {
   for_each                = local.protected_routes
   rest_api_id             = aws_api_gateway_rest_api.todo_api.id
   resource_id             = each.value.resource_id
-  http_method             = each.value.http_method
+  http_method             = aws_api_gateway_method.public[each.key].http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${var.lambda_arns[each.value.lambda]}/invocations"
