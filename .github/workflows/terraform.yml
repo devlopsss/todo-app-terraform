@@ -60,6 +60,10 @@ jobs:
         run: pip install boto3
 
       - name: Run unit tests
+        env:
+          AWS_DEFAULT_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: fake-key
+          AWS_SECRET_ACCESS_KEY: fake-secret
         run: |
           python3 tests/test_todo_create.py
           python3 tests/test_todo_read.py
