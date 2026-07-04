@@ -1,5 +1,5 @@
 resource "aws_secretsmanager_secret" "cognito_secret" {
-  name                    = "${var.app_name}-cognito-secret"
+  name                    = "${var.app_name}-cognito-secret-v2"
   description             = "Cognito app client credentials for ${var.app_name}"
   recovery_window_in_days = 7
 
