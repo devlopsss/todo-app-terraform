@@ -249,3 +249,14 @@ Terraform state is stored in S3:
 | `AWS_SECRET_ACCESS_KEY` | CI user secret key |
 | `AWS_ACCOUNT_ID` | AWS account ID |
 # test
+
+---
+
+## Acknowledgments
+
+This project was built as part of an AWS Solutions Architect Associate learning path,
+guided by [Maqtba](https://maqtba.com/) project ideas and developed with the assistance
+of [Claude] (Anthropic) as an AI pair programmer and solutions architect mentor.
+
+All architecture decisions, debugging, and learning were done hands-on.
+AI was used as a teaching and guidance tool throughout the process.
